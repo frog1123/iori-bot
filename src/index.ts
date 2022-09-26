@@ -1,13 +1,10 @@
-import { ActivityType, Client, GatewayIntentBits, Collection, Message, ColorResolvable } from 'discord.js';
+import { ActivityType, Client, GatewayIntentBits, Collection } from 'discord.js';
+import { MongoClient } from 'mongodb';
+import { PrismaClient } from '@prisma/client';
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { Config, Command } from './types';
 import 'dotenv/config';
-
-export interface Config {
-  prefix: string;
-  presence: string;
-  color: ColorResolvable;
-}
 
 export const config: Config = {
   prefix: '.',
@@ -18,40 +15,44 @@ export const config: Config = {
 const __dirname = process.cwd();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
-export interface Command {
-  default: {
-    name: string;
-    description: string;
-    execute: (message: Message, config: Config) => void;
-  };
-}
+// connect to databse
+const mongoClient = new MongoClient(typeof process.env.DATABASE_URL === 'undefined' ? '' : process.env.DATABASE_URL.toString());
+mongoClient.connect(() => console.log('connected to mongodb'));
+export const db = mongoClient.db();
+export const prisma = new PrismaClient();
 
-// set commands
-const commands = new Collection() as Collection<string, Command>;
-const commandFiles = readdirSync(join(__dirname, 'dist', 'commands')).filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-  const command = (await import(`./commands/${file}`)) as unknown as Command;
-  commands.set(command.default.name, command);
-}
+(async () => {
+  // set commands
+  const commands = new Collection() as Collection<string, Command>;
+  const commandFiles = readdirSync(join(__dirname, 'dist', 'commands')).filter(file => file.endsWith('.js'));
 
-// start
-client.on('ready', () => {
-  console.log(`logged in as ${client?.user?.tag}`);
-  client?.user?.setPresence({ status: 'idle' });
-  client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
-});
+  for (const file of commandFiles) {
+    const command = (await import(`./commands/${file}`)) as unknown as Command;
+    console.log(command.default.name, commandFiles);
+    commands.set(command.default.name, command);
+  }
 
-// refresh server watch count
-setInterval(() => client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching }), 300000);
+  // start
+  client.on('ready', () => {
+    console.log(`logged in as ${client?.user?.tag}`);
+    client?.user?.setPresence({ status: 'idle' });
+    client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
+  });
 
-client.on('messageCreate', message => {
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+  // refresh server watch count
+  setInterval(() => client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching }), 300000);
 
-  const args = message.content.slice(config.prefix.length).split(/ + /).toString().split(' ');
-  const command = args!.shift()!.toLowerCase().split(' ')[0];
+  client.on('messageCreate', message => {
+    if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
-  // execute command if it exists
-  if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config);
-});
+    const args = message.content.slice(config.prefix.length).split(/ + /).toString().split(' ');
+    const command = args!.shift()!.toLowerCase().split(' ')[0];
 
-client.login(process.env.BOT_TOKEN);
+    // execute command if it exists
+    if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config);
+  });
+
+  client.login(process.env.BOT_TOKEN);
+})()
+  .catch(err => console.log(err))
+  .finally(async () => await prisma.$disconnect());
