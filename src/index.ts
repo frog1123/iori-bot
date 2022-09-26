@@ -1,5 +1,4 @@
 import { ActivityType, Client, GatewayIntentBits, Collection } from 'discord.js';
-import { MongoClient } from 'mongodb';
 import { PrismaClient } from '@prisma/client';
 import { readdirSync } from 'fs';
 import { join } from 'path';
@@ -16,10 +15,8 @@ const __dirname = process.cwd();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
 // connect to databse
-const mongoClient = new MongoClient(typeof process.env.DATABASE_URL === 'undefined' ? '' : process.env.DATABASE_URL.toString());
-mongoClient.connect(() => console.log('connected to mongodb'));
-export const db = mongoClient.db();
 export const prisma = new PrismaClient();
+prisma.$connect().then(() => console.log('connected to database'));
 
 (async () => {
   // set commands
@@ -28,7 +25,6 @@ export const prisma = new PrismaClient();
 
   for (const file of commandFiles) {
     const command = (await import(`./commands/${file}`)) as unknown as Command;
-    console.log(command.default.name, commandFiles);
     commands.set(command.default.name, command);
   }
 
