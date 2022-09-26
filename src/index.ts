@@ -1,7 +1,6 @@
 import { ActivityType, Client, GatewayIntentBits, Collection, Message } from 'discord.js';
 import { readdirSync } from 'fs';
 import { join } from 'path';
-
 import 'dotenv/config';
 
 const config = {
