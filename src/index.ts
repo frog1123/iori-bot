@@ -1,21 +1,28 @@
-import { ActivityType, Client, GatewayIntentBits, Collection, Message } from 'discord.js';
+import { ActivityType, Client, GatewayIntentBits, Collection, Message, ColorResolvable } from 'discord.js';
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import 'dotenv/config';
 
-const config = {
+export interface Config {
+  prefix: string;
+  presence: string;
+  color: ColorResolvable;
+}
+
+export const config: Config = {
   prefix: '.',
-  presence: 'idle'
+  presence: 'idle',
+  color: '#ffffff'
 };
 
 const __dirname = process.cwd();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
-interface Command {
+export interface Command {
   default: {
     name: string;
     description: string;
-    execute: (message: Message) => void;
+    execute: (message: Message, config: Config) => void;
   };
 }
 
@@ -44,7 +51,7 @@ client.on('messageCreate', message => {
   const command = args!.shift()!.toLowerCase().split(' ')[0];
 
   // execute command if it exists
-  if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message);
+  if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config);
 });
 
 client.login(process.env.BOT_TOKEN);
