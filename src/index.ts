@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import { Config, Command } from './types';
+import chalk from 'chalk';
 import 'dotenv/config';
 
 export const config: Config = {
@@ -16,7 +17,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 // connect to databse
 export const prisma = new PrismaClient();
-prisma.$connect().then(() => console.log('connected to database'));
+prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database')));
 
 (async () => {
   // set commands
@@ -27,10 +28,11 @@ prisma.$connect().then(() => console.log('connected to database'));
     const command = (await import(`./commands/${file}`)) as unknown as Command;
     commands.set(command.default.name, command);
   }
+  console.log(chalk.bgBlack(`loaded commands from ${commandFiles}`));
 
   // start
   client.on('ready', () => {
-    console.log(`logged in as ${client?.user?.tag}`);
+    console.log(chalk.bgBlack(`logged in as ${client?.user?.tag}`));
     client?.user?.setPresence({ status: 'idle' });
     client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
   });
