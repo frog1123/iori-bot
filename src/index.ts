@@ -54,9 +54,11 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
   });
 
   client.login(process.env.BOT_TOKEN);
+  console.log('4');
 })()
   .catch(err => {
     console.log('error');
     console.error(err);
   })
   .finally(async () => await prisma.$disconnect());
+console.log('5');
