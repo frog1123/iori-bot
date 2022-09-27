@@ -17,7 +17,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 // connect to databse
 export const prisma = new PrismaClient();
-prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database')));
+// prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database')));
 
 (async () => {
   // set commands
