@@ -2,6 +2,7 @@ import { Message, EmbedBuilder } from 'discord.js';
 import { Config } from '../types';
 import { prisma } from '../index.js';
 import { randomNumBetween } from '../utils/random.js';
+import { formatTime } from '../utils/formatTime.js';
 
 export default {
   name: 'search',
@@ -19,13 +20,18 @@ export default {
       message.channel.send('user has not registered');
       return;
     }
+    if (new Date().valueOf() - user.lastSearchTime.valueOf() <= 5 * 1000) {
+      message.channel.send(`this command is on cooldown, please wait \`${formatTime(5 - (new Date().valueOf() - user.lastSearchTime.valueOf()) / 1000)}\``);
+      return;
+    }
 
     await prisma.user.update({
       where: {
         discordId: message.author.id
       },
       data: {
-        balance: user.balance + amount
+        balance: user.balance + amount,
+        lastSearchTime: new Date()
       }
     });
 

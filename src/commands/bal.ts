@@ -25,7 +25,7 @@ export default {
       .setDescription(`balance of <@${userId}>`)
       .addFields({ name: 'balance', value: `${user.balance} 💵` })
       .addFields({ name: 'requested by', value: `<@${message.author.id}>` })
-      .setThumbnail(message.author.displayAvatarURL());
+      .setThumbnail(message.mentions.users.first()?.displayAvatarURL() ?? message.author.displayAvatarURL());
 
     message.channel.send({ embeds: [embed] });
   }

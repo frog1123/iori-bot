@@ -21,8 +21,7 @@ export default {
     await prisma.user
       .create({
         data: {
-          discordId: message.author.id,
-          balance: 100
+          discordId: message.author.id
         }
       })
       .then(() => {
