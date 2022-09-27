@@ -30,7 +30,6 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
   }
   console.log(chalk.bgBlack(`loaded commands from ${commandFiles}`));
 
-  console.log('1');
   // start
   client.on('ready', () => {
     console.log(chalk.bgBlack(`logged in as ${client?.user?.tag}`));
@@ -38,11 +37,8 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
     client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
   });
 
-  console.log('2');
   // refresh server watch count
   setInterval(() => client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching }), 300000);
-
-  console.log('3');
   client.on('messageCreate', message => {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
@@ -54,11 +50,9 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
   });
 
   client.login(process.env.BOT_TOKEN);
-  console.log('4');
 })()
   .catch(err => {
     console.log('error');
     console.error(err);
   })
   .finally(async () => await prisma.$disconnect());
-console.log('5');
