@@ -50,10 +50,10 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
     if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config, args);
   });
 
-  // remove later
-  console.log(process.env.BOT_TOKEN);
-  console.log(process.env.DATABASE_URL);
   client.login(process.env.BOT_TOKEN);
 })()
-  .catch(err => console.log(err))
+  .catch(err => {
+    console.log('error');
+    console.error(err);
+  })
   .finally(async () => await prisma.$disconnect());
