@@ -10,6 +10,6 @@ export interface Command {
   default: {
     name: string;
     description: string;
-    execute: (message: Message, config: Config) => void | Promise<void>;
+    execute: (message: Message, config: Config, args: string[]) => void | Promise<void>;
   };
 }
