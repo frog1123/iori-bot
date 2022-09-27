@@ -12,8 +12,6 @@ export const config: Config = {
   color: '#ffffff'
 };
 
-console.log('test');
-
 const __dirname = process.cwd();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
