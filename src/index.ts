@@ -6,6 +6,10 @@ import { Config, Command } from './types';
 import chalk from 'chalk';
 import 'dotenv/config';
 
+import { MongoClient } from 'mongodb';
+const mongoClient = new MongoClient(typeof process.env.DATABASE_URL === 'undefined' ? '' : process.env.DATABASE_URL);
+mongoClient.connect(() => console.log('connected to mongodb'));
+
 export const config: Config = {
   prefix: '.',
   presence: 'idle',
