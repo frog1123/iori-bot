@@ -10,6 +10,10 @@
     "prisma": "prisma generate --schema src/prisma/schema.prisma",
     "build": "npm run prisma && tsc"
   },
+  "engines": {
+    "node": "16.13.2",
+    "npm": "8.1.2"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
