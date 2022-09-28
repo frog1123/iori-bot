@@ -17,7 +17,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 // connect to databse
 export const prisma = new PrismaClient();
-prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database')));
+// prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database')));
 
 (async () => {
   // set commands
@@ -31,23 +31,23 @@ prisma.$connect().then(() => console.log(chalk.bgBlack('connected to database'))
   console.log(chalk.bgBlack(`loaded commands from ${commandFiles}`));
 
   // start
-  // client.on('ready', () => {
-  //   console.log(chalk.bgBlack(`logged in as ${client?.user?.tag}`));
-  //   client?.user?.setPresence({ status: 'idle' });
-  //   client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
-  // });
+  client.on('ready', () => {
+    console.log(chalk.bgBlack(`logged in as ${client?.user?.tag}`));
+    client?.user?.setPresence({ status: 'idle' });
+    client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching });
+  });
 
-  // // refresh server watch count
-  // setInterval(() => client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching }), 300000);
-  // client.on('messageCreate', message => {
-  //   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+  // refresh server watch count
+  setInterval(() => client?.user?.setActivity(`${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''}`, { type: ActivityType.Watching }), 300000);
+  client.on('messageCreate', message => {
+    if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
-  //   const args = message.content.slice(config.prefix.length).split(/ + /).toString().split(' ');
-  //   const command = args!.shift()!.toLowerCase().split(' ')[0];
+    const args = message.content.slice(config.prefix.length).split(/ + /).toString().split(' ');
+    const command = args!.shift()!.toLowerCase().split(' ')[0];
 
-  //   // execute command if it exists
-  //   if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config, args);
-  // });
+    // execute command if it exists
+    if (typeof commands.get(command) !== 'undefined') commands?.get(command)?.default.execute(message, config, args);
+  });
 
   client.login(process.env.BOT_TOKEN);
 })()
