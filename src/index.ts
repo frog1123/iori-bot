@@ -32,6 +32,7 @@ prisma
     commands.set(command.default.name, command);
   }
   console.log(chalk.bgBlack(`loaded commands from ${commandFiles}`));
+  console.log(process.env.BOT_TOKEN); // remove later
 
   // start
   client.on('ready', () => {
