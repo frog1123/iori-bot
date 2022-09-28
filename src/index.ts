@@ -6,10 +6,6 @@ import { Config, Command } from './types';
 import chalk from 'chalk';
 import 'dotenv/config';
 
-import { MongoClient } from 'mongodb';
-const mongoClient = new MongoClient(typeof process.env.DATABASE_URL === 'undefined' ? '' : process.env.DATABASE_URL);
-mongoClient.connect(() => console.log('connected to mongodb'));
-
 export const config: Config = {
   prefix: '.',
   presence: 'idle',
@@ -21,10 +17,6 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 // connect to databse
 export const prisma = new PrismaClient();
-prisma
-  .$connect()
-  .then(() => console.log(chalk.bgBlack('connected to database')))
-  .catch(err => console.error(err));
 
 (async () => {
   // set commands
